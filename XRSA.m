@@ -41,7 +41,7 @@
     return self;
 }
 
-- (id)initWithPublicKeyFile:(NSString *)publicKeyPath {
+- (XRSA *)initWithPublicKey:(NSString *)publicKeyPath {
     if (publicKeyPath == nil) {
         NSLog(@"Can not find %@", publicKeyPath);
         return nil;

@@ -8,6 +8,7 @@
     size_t maxPlainLen;
 }
 - (XRSA *)initWithData:(NSData *)keyData;
+- (XRSA *)initWithPublicKey:(NSString *)publicKeyPath;
 
 - (NSData *) encryptWithData:(NSData *)content;
 - (NSData *) encryptWithString:(NSString *)content;
