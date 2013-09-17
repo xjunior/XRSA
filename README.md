@@ -30,10 +30,21 @@ There are few points have to mention:
 
 2) Now, drag public_key.der to your iOS
 
-3) To encrypt data, this is how you do:
+3) Create a XRSA instance from your public key:
+
+3.1) Using a public key file bundled to your app:
 
     NSString *keyPath = [[NSBundle mainBundle] pathForResource:@"public_key" ofType:@"der"];
     XRSA *rsa = [[XRSA alloc] initWithPublicKey:keyPath];
+
+3.2) Using a in memory key (safer, since resource are easily recovered from .ipa files):
+
+    NSString *publicKey = @"MIICs ... kT0=\n"; // Base64 encoded key
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:publicKey options:NSDataBase64DecodingIgnoreUnknownCharacters];
+    XRSA *rsa = [[XRSA alloc] initWithData:data];
+
+4) Encrypting data:
+
     if (rsa != nil) {
         NSLog(@"%@", [rsa encryptToString:@"This is plaintext"]);
     } else {
