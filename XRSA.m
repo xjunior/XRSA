@@ -2,51 +2,57 @@
 
 @implementation XRSA
 
-- (id)initWithPublicKey:(NSString *)publicKeyPath {
+- (XRSA *)initWithData:(NSData *)keyData {
     self = [super init];
 
-    if (publicKeyPath == nil) {
-        NSLog(@"Can not find pub.der");
-        return nil;
+    if (self) {
+        if (keyData == nil) {
+            return nil;
+        }
+
+        certificate = SecCertificateCreateWithData(kCFAllocatorDefault, ( __bridge CFDataRef) keyData);
+        if (certificate == nil) {
+            NSLog(@"Can not read certificate from data");
+            return nil;
+        }
+
+        policy = SecPolicyCreateBasicX509();
+        OSStatus returnCode = SecTrustCreateWithCertificates(certificate, policy, &trust);
+        if (returnCode != 0) {
+            NSLog(@"SecTrustCreateWithCertificates fail. Error Code: %ld", returnCode);
+            return nil;
+        }
+
+        SecTrustResultType trustResultType;
+        returnCode = SecTrustEvaluate(trust, &trustResultType);
+        if (returnCode != 0) {
+            return nil;
+        }
+
+        publicKey = SecTrustCopyPublicKey(trust);
+        if (publicKey == nil) {
+            NSLog(@"SecTrustCopyPublicKey fail");
+            return nil;
+        }
+
+        maxPlainLen = SecKeyGetBlockSize(publicKey) - 12;
     }
 
-    NSDate *publicKeyFileContent = [NSData dataWithContentsOfFile:publicKeyPath];
-    if (publicKeyFileContent == nil) {
-        NSLog(@"Can not read from pub.der");
-        return nil;
-    }
-
-    certificate = SecCertificateCreateWithData(kCFAllocatorDefault, ( __bridge CFDataRef)publicKeyFileContent);
-    if (certificate == nil) {
-        NSLog(@"Can not read certificate from pub.der");
-        return nil;
-    }
-
-    policy = SecPolicyCreateBasicX509();
-    OSStatus returnCode = SecTrustCreateWithCertificates(certificate, policy, &trust);
-    if (returnCode != 0) {
-        NSLog(@"SecTrustCreateWithCertificates fail. Error Code: %ld", returnCode);
-        return nil;
-    }
-
-    SecTrustResultType trustResultType;
-    returnCode = SecTrustEvaluate(trust, &trustResultType);
-    if (returnCode != 0) {
-        return nil;
-    }
-
-    publicKey = SecTrustCopyPublicKey(trust);
-    if (publicKey == nil) {
-        NSLog(@"SecTrustCopyPublicKey fail");
-        return nil;
-    }
-
-    maxPlainLen = SecKeyGetBlockSize(publicKey) - 12;
     return self;
 }
 
-- (NSData *) encryptWithData:(NSData *)content {
+- (id)initWithPublicKeyFile:(NSString *)publicKeyPath {
+    if (publicKeyPath == nil) {
+        NSLog(@"Can not find %@", publicKeyPath);
+        return nil;
+    }
 
+    NSData *publicKeyFileContent = [NSData dataWithContentsOfFile:publicKeyPath];
+
+    return [self initWithData:publicKeyFileContent];
+}
+
+- (NSData *) encryptWithData:(NSData *)content {
     size_t plainLen = [content length];
     if (plainLen > maxPlainLen) {
         NSLog(@"content(%ld) is too long, must < %ld", plainLen, maxPlainLen);

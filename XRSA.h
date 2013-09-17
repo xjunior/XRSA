@@ -7,6 +7,8 @@
     SecTrustRef trust;
     size_t maxPlainLen;
 }
+- (XRSA *)initWithData:(NSData *)keyData;
+
 - (NSData *) encryptWithData:(NSData *)content;
 - (NSData *) encryptWithString:(NSString *)content;
 - (NSString *) encryptToString:(NSString *)content;
