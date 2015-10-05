@@ -1,5 +1,9 @@
 #import "XRSA.h"
 
+@interface XRSA ()
+@property (nonatomic, strong) NSNumber *keyLengthBits;
+@end
+
 @implementation XRSA
 
 - (XRSA *)initWithData:(NSData *)keyData {
@@ -35,7 +39,9 @@
             return nil;
         }
 
-        maxPlainLen = SecKeyGetBlockSize(publicKey) - 12;
+        NSInteger keyLength = SecKeyGetBlockSize(publicKey);
+        self.keyLengthBits = @(keyLength);
+        maxPlainLen = keyLength - 12;
     }
 
     return self;
@@ -63,7 +69,7 @@
     [content getBytes:plain
                length:plainLen];
 
-    size_t cipherLen = 128; // currently RSA key length is set to 128 bytes
+    size_t cipherLen = [self.keyLengthBits integerValue];
     void *cipher = malloc(cipherLen);
 
     OSStatus returnCode = SecKeyEncrypt(publicKey, kSecPaddingPKCS1, plain,
