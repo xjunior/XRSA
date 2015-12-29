@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "XRSA"
-  s.version      = "1.1.0"
+  s.version      = "1.1.1"
   s.summary      = "Encrypt data using RSA public keys."
   s.homepage     = "https://github.com/xjunior/XRSA"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
