@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.summary      = "Encrypt data using RSA public keys."
   s.homepage     = "https://github.com/xjunior/XRSA"
   s.license      = { :type => 'MIT', :file => 'LICENSE' }
-  s.author       = { 'Shixiong Zhu' => '', "Carlos Palhares" => "me@xjunior.me" }
+  s.author       = { 'Shixiong Zhu' => '', "Carlos Palhares" => "mr@xjunior.me" }
   s.source       = { :git => "https://github.com/xjunior/XRSA.git", :tag => s.version.to_s }
   s.platform     = :ios, '6.0'
 
