@@ -22,14 +22,15 @@
 
         policy = SecPolicyCreateBasicX509();
         OSStatus returnCode = SecTrustCreateWithCertificates(certificate, policy, &trust);
-        if (returnCode != 0) {
-            NSLog(@"SecTrustCreateWithCertificates fail. Error Code: %ld", returnCode);
+        if (returnCode != noErr) {
+            NSLog(@"SecTrustCreateWithCertificates fail. Error Code: %d", (int)returnCode);
             return nil;
         }
 
         SecTrustResultType trustResultType;
         returnCode = SecTrustEvaluate(trust, &trustResultType);
-        if (returnCode != 0) {
+        if (returnCode != noErr) {
+            NSLog(@"SecTrustEvaluate fail. Error Code: %d", (int)returnCode);
             return nil;
         }
 
@@ -76,8 +77,8 @@
                                         plainLen, cipher, &cipherLen);
 
     NSData *result = nil;
-    if (returnCode != 0) {
-        NSLog(@"SecKeyEncrypt fail. Error Code: %ld", returnCode);
+    if (returnCode != noErr) {
+        NSLog(@"SecKeyEncrypt fail. Error Code: %d", (int)returnCode);
     }
     else {
         result = [NSData dataWithBytes:cipher
